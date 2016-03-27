@@ -10,7 +10,7 @@ module.exports = optimist;
 module.exports.BEGIN = BEGIN;
 module.exports.COMMIT = COMMIT;
 module.exports.REVERT = REVERT;
-function optimist(fn) {
+function optimist(fn, mapActionToOptimist = action => action.optimist) {
   function beginReducer(state, action) {
     let {optimist, innerState} = separateState(state);
     optimist = optimist.concat([{beforeState: innerState, action}]);
@@ -99,8 +99,9 @@ function optimist(fn) {
     return {optimist, ...innerState};
   }
   return function (state, action) {
-    if (action.optimist) {
-      switch (action.optimist.type) {
+    const = optimist = mapActionToOptimist(action)
+    if (optimist) {
+      switch (optimist.type) {
         case BEGIN:
           return beginReducer(state, action);
         case COMMIT:
