@@ -99,9 +99,9 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
     return {optimist, ...innerState};
   }
   return function (state, action) {
-    const optimist = mapActionToOptimist(action)
-    if (optimist) {
-      switch (optimist.type) {
+    const optimistKey = mapActionToOptimist(action)
+    if (optimistKey) {
+      switch (optimistKey.type) {
         case BEGIN:
           return beginReducer(state, action);
         case COMMIT:
