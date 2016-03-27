@@ -99,7 +99,7 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
     return {optimist, ...innerState};
   }
   return function (state, action) {
-    const = optimist = mapActionToOptimist(action)
+    const optimist = mapActionToOptimist(action)
     if (optimist) {
       switch (optimist.type) {
         case BEGIN:
