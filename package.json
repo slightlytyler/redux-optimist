@@ -1,6 +1,6 @@
 {
-  "name": "redux-optimist",
-  "version": "0.0.2",
+  "name": "redux-optimist-prime",
+  "version": "0.0.3",
   "description": "Optimistically apply actions that can be later commited or reverted.",
   "keywords": [],
   "dependencies": {},
@@ -19,8 +19,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ForbesLindesay/redux-optimist.git"
+    "url": "https://github.com/slightlytyler/redux-optimist-prime"
   },
-  "author": "ForbesLindesay",
+  "authorss": ["ForbesLindesay", "quicksnap", "slightlytyler"],
   "license": "MIT"
 }
