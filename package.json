@@ -1,5 +1,5 @@
 {
-  "name": "redux-optimist-prime",
+  "name": "@slightlytyler/redux-optimist",
   "version": "0.0.3",
   "description": "Optimistically apply actions that can be later commited or reverted.",
   "keywords": [],
