@@ -1,18 +1,18 @@
-# redux-optimist-prime
+# redux-optimist
 
 Optimistically apply actions that can be later commited or reverted.
 
 [![Build Status](https://img.shields.io/travis/ForbesLindesay/redux-optimist/master.svg)](https://travis-ci.org/ForbesLindesay/redux-optimist)
 [![Dependency Status](https://img.shields.io/david/ForbesLindesay/redux-optimist.svg)](https://david-dm.org/ForbesLindesay/redux-optimist)
-[![NPM version](https://img.shields.io/npm/v/redux-optimist.svg)](https://www.npmjs.org/package/redux-optimist-prime)
+[![NPM version](https://img.shields.io/npm/v/redux-optimist.svg)](https://www.npmjs.org/package/redux-optimist)
 
 ## Installation
 
-    npm install redux-optimist-prime
+npm install @slightlytyler/redux-optimist
 
 ## Usage
 
-### Step 1: Wrap your top level reducer in redux-optimist-prime
+### Step 1: Wrap your top level reducer in redux-optimist
 
 #### `reducers/todos.js`
 
@@ -47,7 +47,7 @@ export default function status(state = {writing: false, error: null}, action) {
 #### `reducers/index.js`
 
 ```js
-import optimist from 'redux-optimist-prime';
+import optimist from 'redux-optimist';
 import { combineReducers } from 'redux';
 import todos from './todos';
 import status from './status';
@@ -66,7 +66,7 @@ have to use `Redux.combineReducers`.
 #### `middleware/api.js`
 
 ```js
-import {BEGIN, COMMIT, REVERT} from 'redux-optimist-prime';
+import {BEGIN, COMMIT, REVERT} from 'redux-optimist';
 import request from 'then-request';
 
 let nextTransactionID = 0;
