@@ -6,11 +6,41 @@ var REVERT = 'REVERT';
 // Array({transactionID: string or null, beforeState: {object}, action: {object}}
 var INITIAL_OPTIMIST = [];
 
+var ALLOWED_SELECTOR_KEYS = [
+  'selectId',
+  'selectType',
+];
+
+var defaultSelectAction = action => action.optimist;
+var defaultSelectId = action => defaultSelectAction(action).id;
+var defaultSelectType = action => defaultSelectAction(action).type;
+
 module.exports = optimist;
 module.exports.BEGIN = BEGIN;
 module.exports.COMMIT = COMMIT;
 module.exports.REVERT = REVERT;
-function optimist(fn, mapActionToOptimist = action => action.optimist) {
+function optimist(fn, selectors) {
+  var selectId;
+  var selectType;
+
+  if (typeof selectors === 'object') {
+    var selectorKeys = Object.keys(selectors);
+
+    selectorKeys.forEach(key => {
+      if (ALLOWED_SELECTOR_KEYS.indexOf(key) === -1) {
+        throw new Error('[redux-optimist]: Unexpected key ' + key + ' in selector argument.');
+      }
+    });
+
+    selectId = selectors.selectId || defaultSelectId;
+    selectType = selectors.selectType || defaultSelectType;
+  } else {
+    selectId = defaultSelectId;
+    selectType = defaultSelectType;
+  }
+
+  var isValidOptimistAction = action => selectId(action) && selectType(action);
+
   function beginReducer(state, action) {
     let {optimist, innerState} = separateState(state);
     optimist = optimist.concat([{beforeState: innerState, action}]);
@@ -20,13 +50,12 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
   }
   function commitReducer(state, action) {
     let {optimist, innerState} = separateState(state);
-    const optimistAction = mapActionToOptimist(action);
     var newOptimist = [], started = false, committed = false;
     optimist.forEach(function (entry) {
       if (started) {
         if (
           entry.beforeState &&
-          matchesTransaction(entry.action, optimistAction.id)
+          matchesTransaction(entry.action, selectId(action))
         ) {
           committed = true;
           newOptimist.push({action: entry.action});
@@ -35,36 +64,35 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
         }
       } else if (
         entry.beforeState &&
-        !matchesTransaction(entry.action, optimistAction.id)
+        !matchesTransaction(entry.action, selectId(action))
       ) {
         started = true;
         newOptimist.push(entry);
       } else if (
         entry.beforeState &&
-        matchesTransaction(entry.action, optimistAction.id)
+        matchesTransaction(entry.action, selectId(action))
       ) {
         committed = true;
       }
     });
     if (!committed) {
-      console.error('Cannot commit transaction with id "' + optimistAction.id + '" because it does not exist');
+      console.error('Cannot commit transaction with id "' + selectId(action) + '" because it does not exist');
     }
     optimist = newOptimist;
     return baseReducer(optimist, innerState, action);
   }
   function revertReducer(state, action) {
     let {optimist, innerState} = separateState(state);
-    const optimistAction = mapActionToOptimist(action);
     var newOptimist = [], started = false, gotInitialState = false, currentState = innerState;
     optimist.forEach(function (entry) {
       if (
         entry.beforeState &&
-        matchesTransaction(entry.action, optimistAction.id)
+        matchesTransaction(entry.action, selectId(action))
       ) {
         currentState = entry.beforeState;
         gotInitialState = true;
       }
-      if (!matchesTransaction(entry.action, optimistAction.id)) {
+      if (!matchesTransaction(entry.action, selectId(action))) {
         if (
           entry.beforeState
         ) {
@@ -87,7 +115,7 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
       }
     });
     if (!gotInitialState) {
-      console.error('Cannot revert transaction with id "' + optimistAction.id + '" because it does not exist');
+      console.error('Cannot revert transaction with id "' + selectId(action) + '" because it does not exist');
     }
     optimist = newOptimist;
     return baseReducer(optimist, currentState, action);
@@ -101,16 +129,14 @@ function optimist(fn, mapActionToOptimist = action => action.optimist) {
     return {optimist, ...innerState};
   }
   function matchesTransaction(action, id) {
-    const optimistAction = mapActionToOptimist(action);
     return (
-      optimistAction &&
-      optimistAction.id === id
+      isValidOptimistAction(action) &&
+      selectId(action) === id
     );
   }
   return function (state, action) {
-    const optimistAction = mapActionToOptimist(action);
-    if (optimistAction) {
-      switch (optimistAction.type) {
+    if (isValidOptimistAction(action)) {
+      switch (selectType(action)) {
         case BEGIN:
           return beginReducer(state, action);
         case COMMIT:
