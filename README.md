@@ -8,7 +8,7 @@ Optimistically apply actions that can be later commited or reverted.
 
 ## Installation
 
-npm install --save @slightlytyler/redux-optimist
+`npm install --save @slightlytyler/redux-optimist`
 
 ## Usage
 
@@ -47,7 +47,7 @@ export default function status(state = {writing: false, error: null}, action) {
 #### `reducers/index.js`
 
 ```js
-import optimist from 'redux-optimist';
+import optimist from '@slightlytyler/redux-optimist';
 import { combineReducers } from 'redux';
 import todos from './todos';
 import status from './status';
@@ -66,7 +66,7 @@ have to use `Redux.combineReducers`.
 #### `middleware/api.js`
 
 ```js
-import {BEGIN, COMMIT, REVERT} from 'redux-optimist';
+import {BEGIN, COMMIT, REVERT} from '@slightlytyler/redux-optimist';
 import request from 'then-request';
 
 let nextTransactionID = 0;
@@ -159,7 +159,7 @@ If you want to use custom paths for the optimist `id` or `type` you can pass an 
 #### `reducers/index.js`
 
 ```js
-import optimist from 'redux-optimist';
+import optimist from '@slightlytyler/redux-optimist';
 import { combineReducers } from 'redux';
 import todos from './todos';
 import status from './status';
