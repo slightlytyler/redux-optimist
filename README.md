@@ -8,7 +8,7 @@ Optimistically apply actions that can be later commited or reverted.
 
 ## Installation
 
-npm install @slightlytyler/redux-optimist
+npm install --save @slightlytyler/redux-optimist
 
 ## Usage
 
@@ -150,6 +150,30 @@ console.log(store.getState());
 //   todos: [],
 //   status: {writing: false, error: Error}
 // }
+```
+
+## Advances Usage
+
+If you want to use custom paths for the optimist `id` or `type` you can pass an object of selectors as the second argument to optimist.
+
+#### `reducers/index.js`
+
+```js
+import optimist from 'redux-optimist';
+import { combineReducers } from 'redux';
+import todos from './todos';
+import status from './status';
+
+export default optimist(
+  combineReducers({
+    todos,
+    status
+  }),
+  {
+    selectId: action => action.meta.transactionId,
+    selectType: action => action.meta.optimistic,
+  }
+);
 ```
 
 ## License
