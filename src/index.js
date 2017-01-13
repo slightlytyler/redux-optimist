@@ -11,9 +11,15 @@ var ALLOWED_SELECTOR_KEYS = [
   'selectType',
 ];
 
-var defaultSelectAction = action => action.optimist;
-var defaultSelectId = action => defaultSelectAction(action).id;
-var defaultSelectType = action => defaultSelectAction(action).type;
+var defaultSelectOptimistKey = action => action.optimist;
+var defaultSelectId = action => {
+  const optimist = defaultSelectOptimistKey(action);
+  return optimist ? optimist.id : undefined;
+};
+var defaultSelectType = action => {
+  const optimist = defaultSelectOptimistKey(action);
+  return optimist ? optimist.type : undefined;
+};
 
 module.exports = optimist;
 module.exports.BEGIN = BEGIN;
